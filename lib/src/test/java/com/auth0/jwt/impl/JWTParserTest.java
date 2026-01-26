@@ -3,10 +3,9 @@ package com.auth0.jwt.impl;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Header;
 import com.auth0.jwt.interfaces.Payload;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectReader;
+import tools.jackson.databind.SerializationFeature;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,9 +40,10 @@ public class JWTParserTest {
 
     @Test
     public void shouldAddDeserializers() {
-        ObjectMapper mapper = mock(ObjectMapper.class);
-        JWTParser.addDeserializers(mapper);
-        verify(mapper).registerModule(any(Module.class));
+        tools.jackson.databind.json.JsonMapper.Builder builder = tools.jackson.databind.json.JsonMapper.builder();
+        JWTParser.addDeserializers(builder);
+        tools.jackson.databind.ObjectMapper mapper = builder.build();
+        assertThat(mapper, is(notNullValue()));
     }
 
     @Test

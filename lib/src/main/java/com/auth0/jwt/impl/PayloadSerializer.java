@@ -1,7 +1,8 @@
 package com.auth0.jwt.impl;
 
 import com.auth0.jwt.RegisteredClaims;
-import com.fasterxml.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,11 +23,13 @@ public class PayloadSerializer extends ClaimsSerializer<PayloadClaimsHolder> {
     }
 
     @Override
-    protected void writeClaim(Map.Entry<String, Object> entry, JsonGenerator gen) throws IOException {
+    protected void writeClaim(Map.Entry<String, Object> entry,
+                              JsonGenerator gen,
+                              SerializationContext provider) throws IOException {
         if (RegisteredClaims.AUDIENCE.equals(entry.getKey())) {
             writeAudience(gen, entry);
         } else {
-            super.writeClaim(entry, gen);
+            super.writeClaim(entry, gen, provider);
         }
     }
 
@@ -36,14 +39,13 @@ public class PayloadSerializer extends ClaimsSerializer<PayloadClaimsHolder> {
      */
     private void writeAudience(JsonGenerator gen, Map.Entry<String, Object> e) throws IOException {
         if (e.getValue() instanceof String) {
-            gen.writeFieldName(e.getKey());
+            gen.writeName(e.getKey());
             gen.writeString((String) e.getValue());
         } else {
             List<String> audArray = new ArrayList<>();
             if (e.getValue() instanceof String[]) {
                 audArray = Arrays.asList((String[]) e.getValue());
-            } else if (e.getValue() instanceof List) {
-                List<?> audList = (List<?>) e.getValue();
+            } else if (e.getValue() instanceof List<?> audList) {
                 for (Object aud : audList) {
                     if (aud instanceof String) {
                         audArray.add((String) aud);
@@ -51,10 +53,10 @@ public class PayloadSerializer extends ClaimsSerializer<PayloadClaimsHolder> {
                 }
             }
             if (audArray.size() == 1) {
-                gen.writeFieldName(e.getKey());
+                gen.writeName(e.getKey());
                 gen.writeString(audArray.get(0));
             } else if (audArray.size() > 1) {
-                gen.writeFieldName(e.getKey());
+                gen.writeName(e.getKey());
                 gen.writeStartArray();
                 for (String aud : audArray) {
                     gen.writeString(aud);

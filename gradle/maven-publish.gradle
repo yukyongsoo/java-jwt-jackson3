@@ -1,3 +1,13 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "software.amazon.awssdk:auth:2.41.17"
+    }
+}
+
+
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
@@ -19,15 +29,11 @@ tasks.withType(Javadoc).configureEach {
 
 javadoc {
     // Specify the Java version that the project will use
-    options.addStringOption('-release', "11")
+    options.addStringOption('-release', "17")
 }
 artifacts {
     archives sourcesJar, javadocJar
 }
-
-
-final releaseRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-final snapshotRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
 
 publishing {
     publications {
@@ -84,23 +90,32 @@ publishing {
     }
     repositories {
         maven {
-            name = "sonatype"
-            url = version.endsWith('SNAPSHOT') ? snapshotRepositoryUrl : releaseRepositoryUrl
-            credentials {
-                username = System.getenv("MAVEN_USERNAME")
-                password = System.getenv("MAVEN_PASSWORD")
+            name = "BunjangS3Releases"
+            url = uri("s3://bun-maven-repo/releases")
+
+            credentials(AwsCredentials) {
+                def awsCredentials = software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
+                        .create()
+                        .resolveCredentials()
+
+                accessKey = awsCredentials.accessKeyId()
+                secretKey = awsCredentials.secretAccessKey()
+
+                if (awsCredentials instanceof software.amazon.awssdk.auth.credentials.AwsSessionCredentials) {
+                    sessionToken = ((software.amazon.awssdk.auth.credentials.AwsSessionCredentials) awsCredentials).sessionToken()
+                }
             }
         }
     }
 }
 
-signing {
-    def signingKey = System.getenv("SIGNING_KEY")
-    def signingPassword = System.getenv("SIGNING_PASSWORD")
-    useInMemoryPgpKeys(signingKey, signingPassword)
-
-    sign publishing.publications.mavenJava
-}
+//signing {
+//    def signingKey = System.getenv("SIGNING_KEY")
+//    def signingPassword = System.getenv("SIGNING_PASSWORD")
+//    useInMemoryPgpKeys(signingKey, signingPassword)
+//
+//    sign publishing.publications.mavenJava
+//}
 
 javadoc {
     if(JavaVersion.current().isJava9Compatible()) {

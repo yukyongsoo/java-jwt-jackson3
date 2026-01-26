@@ -2,16 +2,12 @@ package com.auth0.jwt.impl;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.Header;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.NullNode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.NullNode;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,6 +17,7 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.auth0.jwt.impl.JWTParser.getDefaultObjectMapper;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -46,13 +43,11 @@ public class HeaderDeserializerTest {
         exception.expect(JWTDecodeException.class);
         exception.expectMessage("Parsing the Header's JSON resulted on a Null map");
 
-        JsonDeserializer deserializer = new HeaderDeserializer();
+        HeaderDeserializer deserializer = new HeaderDeserializer();
         JsonParser parser = mock(JsonParser.class);
-        ObjectCodec codec = mock(ObjectCodec.class);
         DeserializationContext context = mock(DeserializationContext.class);
 
-        when(codec.readValue(eq(parser), any(TypeReference.class))).thenReturn(null);
-        when(parser.getCodec()).thenReturn(codec);
+        when(context.readValue(eq(parser), any(TypeReference.class))).thenReturn(null);
 
         deserializer.deserialize(parser, context);
     }
@@ -68,11 +63,10 @@ public class HeaderDeserializerTest {
                 "  \"roles\": \"admin\"\n" +
                 "}";
         StringReader reader = new StringReader(headerJSON);
-        JsonParser jsonParser = new JsonFactory().createParser(reader);
-        ObjectMapper mapper = new ObjectMapper();
-        jsonParser.setCodec(mapper);
+        ObjectMapper mapper = getDefaultObjectMapper();
+        JsonParser jsonParser = mapper.createParser(reader);
 
-        Header header = deserializer.deserialize(jsonParser, mapper.getDeserializationContext());
+        Header header = deserializer.deserialize(jsonParser, mapper._deserializationContext());
 
         assertThat(header, is(notNullValue()));
         assertThat(header.getAlgorithm(), is("HS256"));
@@ -109,7 +103,8 @@ public class HeaderDeserializerTest {
     @Test
     public void shouldGetStringWhenParsingTextNode() {
         Map<String, JsonNode> tree = new HashMap<>();
-        TextNode node = new TextNode("something here");
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode node = mapper.getNodeFactory().textNode("something here");
         tree.put("key", node);
 
         String text = deserializer.getString(tree, "key");

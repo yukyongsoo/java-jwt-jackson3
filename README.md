@@ -13,6 +13,11 @@
 
 :books: [Documentation](#documentation) - :rocket: [Getting Started](#getting-started) - :computer: [API Reference](#api-reference) :speech_balloon: [Feedback](#feedback)
 
+##
+this is a fork of [java-jwt](https://github.com/auth0/java-jwt).
+we are working on a new version of this library that will be released soon. 
+cause java-jwt is not maintained anymore, so we decided to fork it for support jackson 3.x
+
 ## Documentation
 - [Examples](./EXAMPLES.md) - code samples for common java-jwt scenarios.
 - [Docs site](https://www.auth0.com/docs) - explore our docs site and learn more about Auth0.
@@ -21,7 +26,7 @@
 
 ### Requirements
 
-This library is supported for Java LTS versions 8, 11, and 17. For issues on non-LTS versions above 8, consideration will be given on a case-by-case basis.
+This library is supported for Java LTS 17. For issues on non-LTS versions above 17, consideration will be given on a case-by-case basis.
 
 > `java-jwt` is intended for server-side JVM applications. Android applications should use [JWTDecode.Android](https://github.com/auth0/JWTDecode.Android).
 
@@ -50,14 +55,14 @@ Add the dependency via Maven:
 <dependency>
   <groupId>com.auth0</groupId>
   <artifactId>java-jwt</artifactId>
-  <version>4.5.0</version>
+  <version>5.0.0</version>
 </dependency>
 ```
 
 or Gradle:
 
 ```gradle
-implementation 'com.auth0:java-jwt:4.5.0'
+implementation 'com.auth0:java-jwt:5.0.0'
 ```
 
 ### Create a JWT

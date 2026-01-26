@@ -1,5 +1,7 @@
 package com.auth0.jwt;
 
+import java.util.Objects;
+
 public class UserPojo {
     private String name;
     private int id;
@@ -21,7 +23,7 @@ public class UserPojo {
 
         UserPojo userPojo = (UserPojo) o;
 
-        return id == userPojo.id && (name != null ? name.equals(userPojo.name) : userPojo.name == null);
+        return id == userPojo.id && (Objects.equals(name, userPojo.name));
     }
 
     public String getName() {

@@ -50,31 +50,21 @@ public class ConcurrentVerifyTest {
         waiter.await(TIMEOUT, REPEAT_COUNT);
     }
 
-    private static class VerifyTask implements Callable<DecodedJWT> {
-
-        private final Waiter waiter;
-        private final JWTVerifier verifier;
-        private final String token;
-
-        VerifyTask(Waiter waiter, final JWTVerifier verifier, final String token) {
-            this.waiter = waiter;
-            this.verifier = verifier;
-            this.token = token;
-        }
+    private record VerifyTask(Waiter waiter, JWTVerifier verifier, String token) implements Callable<DecodedJWT> {
 
         @Override
-        public DecodedJWT call() {
-            DecodedJWT jwt = null;
-            try {
-                jwt = verifier.verify(token);
-                waiter.assertNotNull(jwt);
-            } catch (Exception e) {
-                waiter.fail(e);
+            public DecodedJWT call() {
+                DecodedJWT jwt = null;
+                try {
+                    jwt = verifier.verify(token);
+                    waiter.assertNotNull(jwt);
+                } catch (Exception e) {
+                    waiter.fail(e);
+                }
+                waiter.resume();
+                return jwt;
             }
-            waiter.resume();
-            return jwt;
         }
-    }
 
     @Test
     public void shouldPassHMAC256Verification() throws Exception {

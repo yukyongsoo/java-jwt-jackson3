@@ -1,7 +1,6 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-
 allprojects {
-    group = 'com.auth0'
+    group = 'com.yuk.auth0'
 
     repositories {
         mavenCentral()

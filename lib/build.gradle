@@ -1,19 +1,8 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        // https://github.com/melix/japicmp-gradle-plugin/issues/36
-        classpath 'com.google.guava:guava:31.1-jre'
-    }
-}
-
 plugins {
     id 'java'
     id 'jacoco'
     id 'checkstyle'
-    id 'me.champeau.gradle.japicmp' version '0.4.1'
+    id 'me.champeau.gradle.japicmp' version '0.4.6'
 }
 
 sourceSets {
@@ -88,7 +77,7 @@ private static File getBaselineJar(Project project, String baselineVersion) {
     // Use detached configuration: https://github.com/square/okhttp/blob/master/build.gradle#L270
     def group = project.group
     try {
-        def baseline = "${project.group}:${project.name}:$baselineVersion"
+        def baseline = "com.auth0:java-jwt:$baselineVersion"
         project.group = 'virtual_group_for_japicmp'
         def dependency = project.dependencies.create(baseline + "@jar")
         return project.configurations.detachedConfiguration(dependency).files.find {
@@ -100,30 +89,34 @@ private static File getBaselineJar(Project project, String baselineVersion) {
 }
 
 ext {
-    baselineCompareVersion = '4.1.0'
-    testInJavaVersions = [8, 11, 17, 21]
+    baselineCompareVersion = '4.5.0'
+    testInJavaVersions = [17, 21]
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
+        languageVersion = JavaLanguageVersion.of(17)
     }
+
+    modularity.inferModulePath = true
 }
 
 compileJava {
-    exclude 'module-info.java'
-    // Required to be compatible with JDK 8+
-    options.release = 8
+    // Required to be compatible with JDK 17+
+    options.release = 17
+    options.compilerArgs << "-Xlint:all"
 }
 
 javadoc {
-    // Exclude internal implementation package from javadoc
-    excludes = ['com/auth0/jwt/impl', 'module-info.java']
+    modularity.inferModulePath = false
+    source = sourceSets.main.allJava
+    classpath = files(sourceSets.main.output.classesDirs) + sourceSets.main.compileClasspath
+    excludes = ['com/auth0/jwt/impl/**', 'module-info.java']
 }
 
 dependencies {
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.4'
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.4'
+    implementation 'tools.jackson.core:jackson-core:3.0.4'
+    implementation 'tools.jackson.core:jackson-databind:3.0.4'
 
     testImplementation 'org.bouncycastle:bcprov-jdk15on:1.70'
     testImplementation 'junit:junit:4.13.2'
@@ -132,8 +125,8 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:4.4.0'
 
     jmhImplementation sourceSets.main.output
-    jmhImplementation 'org.openjdk.jmh:jmh-core:1.35'
-    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.35'
+    jmhImplementation 'org.openjdk.jmh:jmh-core:1.37'
+    jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.37'
 }
 
 jacoco {
@@ -154,37 +147,9 @@ test {
     }
 }
 
-task compileModuleInfoJava(type: JavaCompile) {
-    classpath = files()
-    source = 'src/main/java/module-info.java'
-    destinationDir = compileJava.destinationDir
-    doLast {
-        def descriptor = new File(compileJava.destinationDir, 'module-info.class')
-        def dest = new File(compileJava.destinationDir, 'META-INF/versions/9')
-        ant.move file: descriptor, todir: dest
-    }
-
-    doFirst {
-        options.compilerArgs = [
-                '--release', '9',
-                '--module-path', compileJava.classpath.asPath
-        ]
-    }
-}
-
 compileTestJava {
-    options.release = 8
+    options.release = 17
     options.compilerArgs = ["-Xlint:deprecation"]
-}
-
-def testJava8 = tasks.register('testJava8', Test) {
-    description = 'Runs unit tests on Java 8.'
-    group = 'verification'
-
-    javaLauncher.set(javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(8)
-    })
-    shouldRunAfter(tasks.named('test'))
 }
 
 def testJava17 = tasks.register('testJava17', Test) {
@@ -208,17 +173,9 @@ def testJava21 = tasks.register('testJava21', Test) {
 }
 
 tasks.named('check') {
-    dependsOn(testJava8)
     dependsOn(testJava17)
     dependsOn(testJava21)
 }
-
-jar {
-    manifest.attributes('Multi-Release': 'true')
-}
-
-compileModuleInfoJava.dependsOn compileJava
-classes.dependsOn compileModuleInfoJava
 
 // you can pass any arguments JMH accepts via Gradle args.
 // Example: ./gradlew runJMH --args="-lrf"

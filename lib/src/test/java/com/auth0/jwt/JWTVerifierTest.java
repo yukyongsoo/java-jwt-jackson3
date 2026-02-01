@@ -316,7 +316,7 @@ public class JWTVerifierTest {
             // Token 'aud': 'wide audience'
             String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ3aWRlIGF1ZGllbmNlIn0.c9anq03XepcuEKWEVsPk9cck0sIIfrT6hHbBsCar49o";
             JWTVerifier.init(Algorithm.HMAC256("secret"))
-                    .withAnyOfAudience(new String[0])
+                    .withAnyOfAudience()
                     .build()
                     .verify(token);
         });

@@ -3,8 +3,8 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -657,7 +657,7 @@ public class JWTCreatorTest {
         // array types
         assertThat(list.get(7), is(Arrays.asList(3, 5)));
         assertThat(list.get(8), is(Arrays.asList(Long.MAX_VALUE, Long.MIN_VALUE)));
-        assertThat(list.get(9), is(Arrays.asList("string")));
+        assertThat(list.get(9), is(List.of("string")));
 
         // list
         assertThat(list.get(10), is(Arrays.asList("a", "b", "c")));
@@ -1045,14 +1045,14 @@ public class JWTCreatorTest {
 
         List<String> headerFields = new ArrayList<>();
         objectMapper.readValue(headerJson, ObjectNode.class)
-                .fieldNames().forEachRemaining(headerFields::add);
+                .properties().forEach(p -> headerFields.add(p.getKey()));
         headerFields.retainAll(headerInsertionOrder);
         assertThat("Header insertion order should be preserved",
                 headerFields, is(equalTo(headerInsertionOrder)));
 
         List<String> payloadFields = new ArrayList<>();
         objectMapper.readValue(payloadJson, ObjectNode.class)
-                .fieldNames().forEachRemaining(payloadFields::add);
+                .properties().forEach(p -> payloadFields.add(p.getKey()));
         payloadFields.retainAll(payloadInsertionOrder);
         assertThat("Claim insertion order should be preserved",
                 payloadFields, is(equalTo(payloadInsertionOrder)));

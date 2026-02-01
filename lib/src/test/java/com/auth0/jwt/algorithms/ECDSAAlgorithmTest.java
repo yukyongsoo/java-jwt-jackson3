@@ -809,7 +809,7 @@ public class ECDSAAlgorithmTest {
     public void shouldThrowOnDERSignatureConversionIfDoesNotHaveExpectedLength() throws Exception {
         ECDSAAlgorithm algorithm256 = (ECDSAAlgorithm) Algorithm.ECDSA256((ECPublicKey) readPublicKeyFromFile(PUBLIC_KEY_FILE_256, "EC"), (ECPrivateKey) readPrivateKeyFromFile(PRIVATE_KEY_FILE_256, "EC"));
         byte[] derSignature = createDERSignature(32, false, false);
-        int received = (int) derSignature[1];
+        int received = derSignature[1];
         received--;
         derSignature[1] = (byte) received;
         exception.expect(SignatureException.class);

@@ -1,13 +1,3 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "software.amazon.awssdk:auth:2.41.17"
-    }
-}
-
-
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
@@ -90,20 +80,12 @@ publishing {
     }
     repositories {
         maven {
-            name = "BunjangS3Releases"
-            url = uri("s3://bun-maven-repo/releases")
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/yukyongsoo/java-jwt-jackson3")
 
-            credentials(AwsCredentials) {
-                def awsCredentials = software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider
-                        .create()
-                        .resolveCredentials()
-
-                accessKey = awsCredentials.accessKeyId()
-                secretKey = awsCredentials.secretAccessKey()
-
-                if (awsCredentials instanceof software.amazon.awssdk.auth.credentials.AwsSessionCredentials) {
-                    sessionToken = ((software.amazon.awssdk.auth.credentials.AwsSessionCredentials) awsCredentials).sessionToken()
-                }
+            credentials {
+                username = System.getenv("GITHUB_ACTOR")
+                password = System.getenv("GITHUB_TOKEN")
             }
         }
     }

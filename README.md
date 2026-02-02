@@ -16,7 +16,7 @@
 ##
 this is a fork of [java-jwt](https://github.com/auth0/java-jwt).
 we are working on a new version of this library that will be released soon. 
-cause java-jwt is not maintained anymore, so we decided to fork it for support jackson 3.x
+cause I think java-jwt is not maintained anymore, so we decided to fork it for support jackson 3.x
 
 ## Documentation
 - [Examples](./EXAMPLES.md) - code samples for common java-jwt scenarios.
@@ -53,7 +53,7 @@ Add the dependency via Maven:
 
 ```xml
 <dependency>
-  <groupId>com.auth0</groupId>
+  <groupId>com.yuk</groupId>
   <artifactId>java-jwt</artifactId>
   <version>5.0.0</version>
 </dependency>
@@ -62,7 +62,7 @@ Add the dependency via Maven:
 or Gradle:
 
 ```gradle
-implementation 'com.auth0:java-jwt:5.0.0'
+implementation 'com.yuk:java-jwt:5.0.0'
 ```
 
 ### Create a JWT

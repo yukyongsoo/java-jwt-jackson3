@@ -1,17 +1,14 @@
 package com.auth0.jwt;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class TokenUtilsTest {
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void toleratesEmptyFirstPart() {
@@ -63,32 +60,35 @@ public class TokenUtilsTest {
 
     @Test
     public void shouldThrowOnSplitTokenWithMoreThan3Parts() {
-        exception.expect(JWTDecodeException.class);
-        exception.expectMessage("The token was expected to have 3 parts, but got > 3.");
-        String token = "this.has.four.parts";
-        TokenUtils.splitToken(token);
+        Throwable exception = assertThrows(JWTDecodeException.class, () -> {
+            String token = "this.has.four.parts";
+            TokenUtils.splitToken(token);
+        });
+        assertThat(exception.getMessage(), containsString("The token was expected to have 3 parts, but got > 3."));
     }
 
     @Test
     public void shouldThrowOnSplitTokenWithNoParts() {
-        exception.expect(JWTDecodeException.class);
-        exception.expectMessage("The token was expected to have 3 parts, but got 0.");
-        String token = "notajwt";
-        TokenUtils.splitToken(token);
+        Throwable exception = assertThrows(JWTDecodeException.class, () -> {
+            String token = "notajwt";
+            TokenUtils.splitToken(token);
+        });
+        assertThat(exception.getMessage(), containsString("The token was expected to have 3 parts, but got 0."));
     }
 
     @Test
     public void shouldThrowOnSplitTokenWith2Parts() {
-        exception.expect(JWTDecodeException.class);
-        exception.expectMessage("The token was expected to have 3 parts, but got 2.");
-        String token = "two.parts";
-        TokenUtils.splitToken(token);
+        Throwable exception = assertThrows(JWTDecodeException.class, () -> {
+            String token = "two.parts";
+            TokenUtils.splitToken(token);
+        });
+        assertThat(exception.getMessage(), containsString("The token was expected to have 3 parts, but got 2."));
     }
 
     @Test
     public void shouldThrowOnSplitTokenWithNullValue() {
-        exception.expect(JWTDecodeException.class);
-        exception.expectMessage("The token is null.");
-        TokenUtils.splitToken(null);
+        Throwable exception = assertThrows(JWTDecodeException.class, () ->
+            TokenUtils.splitToken(null));
+        assertThat(exception.getMessage(), containsString("The token is null."));
     }
 }

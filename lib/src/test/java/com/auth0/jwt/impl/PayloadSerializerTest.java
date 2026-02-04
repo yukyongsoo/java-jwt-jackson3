@@ -1,11 +1,11 @@
 package com.auth0.jwt.impl;
 
 import com.auth0.jwt.UserPojo;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationContext;
-import org.junit.Before;
-import org.junit.Test;
 
 import java.io.StringWriter;
 import java.util.*;
@@ -22,7 +22,7 @@ public class PayloadSerializerTest {
     private JsonGenerator jsonGenerator;
     private SerializationContext serializationContext;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         writer = new StringWriter();
         serializer = new PayloadSerializer();

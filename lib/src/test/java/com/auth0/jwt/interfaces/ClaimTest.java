@@ -1,7 +1,7 @@
 package com.auth0.jwt.interfaces;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Date;
 import java.util.List;

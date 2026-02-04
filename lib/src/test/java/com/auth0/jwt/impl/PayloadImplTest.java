@@ -7,10 +7,8 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.ObjectReader;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.core.IsIterableContaining;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.*;
@@ -18,11 +16,9 @@ import java.util.*;
 import static com.auth0.jwt.impl.JWTParser.getDefaultObjectMapper;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PayloadImplTest {
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     private PayloadImpl payload;
     private final Instant expiresAt = Instant.now().plusSeconds(10);
@@ -31,7 +27,7 @@ public class PayloadImplTest {
 
     private DeserializationContext context;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         var mapper = getDefaultObjectMapper();
         context = mapper._deserializationContext();
@@ -43,16 +39,18 @@ public class PayloadImplTest {
 
     @Test
     public void shouldHaveUnmodifiableTree() {
-        exception.expect(UnsupportedOperationException.class);
-        PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, new HashMap<>(), context);
-        payload.getTree().put("something", null);
+        assertThrows(UnsupportedOperationException.class, () -> {
+            PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, new HashMap<>(), context);
+            payload.getTree().put("something", null);
+        });
     }
 
     @Test
     public void shouldHaveUnmodifiableAudience() {
-        exception.expect(UnsupportedOperationException.class);
-        PayloadImpl payload = new PayloadImpl(null, null, new ArrayList<>(), null, null, null, null, null, context);
-        payload.getAudience().add("something");
+        assertThrows(UnsupportedOperationException.class, () -> {
+            PayloadImpl payload = new PayloadImpl(null, null, new ArrayList<>(), null, null, null, null, null, context);
+            payload.getAudience().add("something");
+        });
     }
 
     @Test
@@ -189,7 +187,7 @@ public class PayloadImplTest {
         assertThat(payload, is(notNullValue()));
         Map<String, Claim> claims = payload.getClaims();
         assertThat(claims, is(notNullValue()));
-        exception.expect(UnsupportedOperationException.class);
-        claims.put("name", null);
+        assertThrows(UnsupportedOperationException.class, () ->
+            claims.put("name", null));
     }
 }

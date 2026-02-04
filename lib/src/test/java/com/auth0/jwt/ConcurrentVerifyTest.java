@@ -3,11 +3,9 @@ package com.auth0.jwt;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import net.jodah.concurrentunit.Waiter;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.security.interfaces.ECKey;
 import java.security.interfaces.RSAKey;
@@ -27,17 +25,14 @@ public class ConcurrentVerifyTest {
     private static final String PUBLIC_KEY_FILE_256 = "src/test/resources/ec256-key-public.pem";
     private static final String PUBLIC_KEY_FILE_384 = "src/test/resources/ec384-key-public.pem";
     private static final String PUBLIC_KEY_FILE_512 = "src/test/resources/ec512-key-public.pem";
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
     private static ExecutorService executor;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeAll() {
         executor = Executors.newFixedThreadPool(THREAD_COUNT);
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterAll() {
         executor.shutdown();
     }

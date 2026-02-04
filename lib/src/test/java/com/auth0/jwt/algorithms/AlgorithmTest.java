@@ -2,16 +2,16 @@ package com.auth0.jwt.algorithms;
 
 import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.*;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.withSettings;
@@ -20,194 +20,209 @@ import static org.mockito.Mockito.when;
 
 public class AlgorithmTest {
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
 
     @Test
     public void shouldThrowHMAC256InstanceWithNullSecretBytes() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Secret cannot be null");
-        byte[] secret = null;
-        Algorithm.HMAC256(secret);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            byte[] secret = null;
+            Algorithm.HMAC256(secret);
+        });
+        assertThat(exception.getMessage(), containsString("The Secret cannot be null"));
     }
 
     @Test
     public void shouldThrowHMAC384InstanceWithNullSecretBytes() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Secret cannot be null");
-        byte[] secret = null;
-        Algorithm.HMAC384(secret);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            byte[] secret = null;
+            Algorithm.HMAC384(secret);
+        });
+        assertThat(exception.getMessage(), containsString("The Secret cannot be null"));
     }
 
     @Test
     public void shouldThrowHMAC512InstanceWithNullSecretBytes() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Secret cannot be null");
-        byte[] secret = null;
-        Algorithm.HMAC512(secret);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            byte[] secret = null;
+            Algorithm.HMAC512(secret);
+        });
+        assertThat(exception.getMessage(), containsString("The Secret cannot be null"));
     }
 
     @Test
     public void shouldThrowHMAC256InstanceWithNullSecret() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Secret cannot be null");
-        String secret = null;
-        Algorithm.HMAC256(secret);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            String secret = null;
+            Algorithm.HMAC256(secret);
+        });
+        assertThat(exception.getMessage(), containsString("The Secret cannot be null"));
     }
 
     @Test
     public void shouldThrowHMAC384InstanceWithNullSecret() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Secret cannot be null");
-        String secret = null;
-        Algorithm.HMAC384(secret);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            String secret = null;
+            Algorithm.HMAC384(secret);
+        });
+        assertThat(exception.getMessage(), containsString("The Secret cannot be null"));
     }
 
     @Test
     public void shouldThrowHMAC512InstanceWithNullSecret() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Secret cannot be null");
-        String secret = null;
-        Algorithm.HMAC512(secret);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            String secret = null;
+            Algorithm.HMAC512(secret);
+        });
+        assertThat(exception.getMessage(), containsString("The Secret cannot be null"));
     }
 
     @Test
     public void shouldThrowRSA256InstanceWithNullKey() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Both provided Keys cannot be null.");
-        RSAKey key = null;
-        Algorithm.RSA256(key);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            RSAKey key = null;
+            Algorithm.RSA256(key);
+        });
+        assertThat(exception.getMessage(), containsString("Both provided Keys cannot be null."));
     }
 
     @Test
     public void shouldThrowRSA256InstanceWithNullKeys() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Both provided Keys cannot be null.");
-        Algorithm.RSA256(null, null);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () ->
+            Algorithm.RSA256(null, null));
+        assertThat(exception.getMessage(), containsString("Both provided Keys cannot be null."));
     }
 
     @Test
     public void shouldThrowRSA256InstanceWithNullKeyProvider() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Key Provider cannot be null.");
-        RSAKeyProvider provider = null;
-        Algorithm.RSA256(provider);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            RSAKeyProvider provider = null;
+            Algorithm.RSA256(provider);
+        });
+        assertThat(exception.getMessage(), containsString("The Key Provider cannot be null."));
     }
 
     @Test
     public void shouldThrowRSA384InstanceWithNullKey() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Both provided Keys cannot be null.");
-        RSAKey key = null;
-        Algorithm.RSA384(key);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            RSAKey key = null;
+            Algorithm.RSA384(key);
+        });
+        assertThat(exception.getMessage(), containsString("Both provided Keys cannot be null."));
     }
 
     @Test
     public void shouldThrowRSA384InstanceWithNullKeys() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Both provided Keys cannot be null.");
-        Algorithm.RSA384(null, null);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () ->
+            Algorithm.RSA384(null, null));
+        assertThat(exception.getMessage(), containsString("Both provided Keys cannot be null."));
     }
 
     @Test
     public void shouldThrowRSA384InstanceWithNullKeyProvider() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Key Provider cannot be null.");
-        RSAKeyProvider provider = null;
-        Algorithm.RSA384(provider);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            RSAKeyProvider provider = null;
+            Algorithm.RSA384(provider);
+        });
+        assertThat(exception.getMessage(), containsString("The Key Provider cannot be null."));
     }
 
     @Test
     public void shouldThrowRSA512InstanceWithNullKey() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Both provided Keys cannot be null.");
-        RSAKey key = null;
-        Algorithm.RSA512(key);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            RSAKey key = null;
+            Algorithm.RSA512(key);
+        });
+        assertThat(exception.getMessage(), containsString("Both provided Keys cannot be null."));
     }
 
     @Test
     public void shouldThrowRSA512InstanceWithNullKeys() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Both provided Keys cannot be null.");
-        Algorithm.RSA512(null, null);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () ->
+            Algorithm.RSA512(null, null));
+        assertThat(exception.getMessage(), containsString("Both provided Keys cannot be null."));
     }
 
     @Test
     public void shouldThrowRSA512InstanceWithNullKeyProvider() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Key Provider cannot be null.");
-        RSAKeyProvider provider = null;
-        Algorithm.RSA512(provider);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            RSAKeyProvider provider = null;
+            Algorithm.RSA512(provider);
+        });
+        assertThat(exception.getMessage(), containsString("The Key Provider cannot be null."));
     }
 
     @Test
     public void shouldThrowECDSA256InstanceWithNullKey() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Both provided Keys cannot be null.");
-        ECKey key = null;
-        Algorithm.ECDSA256(key);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            ECKey key = null;
+            Algorithm.ECDSA256(key);
+        });
+        assertThat(exception.getMessage(), containsString("Both provided Keys cannot be null."));
     }
 
     @Test
     public void shouldThrowECDSA256InstanceWithNullKeys() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Both provided Keys cannot be null.");
-        Algorithm.ECDSA256(null, null);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () ->
+            Algorithm.ECDSA256(null, null));
+        assertThat(exception.getMessage(), containsString("Both provided Keys cannot be null."));
     }
 
     @Test
     public void shouldThrowECDSA256InstanceWithNullKeyProvider() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Key Provider cannot be null.");
-        ECDSAKeyProvider provider = null;
-        Algorithm.ECDSA256(provider);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            ECDSAKeyProvider provider = null;
+            Algorithm.ECDSA256(provider);
+        });
+        assertThat(exception.getMessage(), containsString("The Key Provider cannot be null."));
     }
 
     @Test
     public void shouldThrowECDSA384InstanceWithNullKey() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Both provided Keys cannot be null.");
-        ECKey key = null;
-        Algorithm.ECDSA384(key);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            ECKey key = null;
+            Algorithm.ECDSA384(key);
+        });
+        assertThat(exception.getMessage(), containsString("Both provided Keys cannot be null."));
     }
 
     @Test
     public void shouldThrowECDSA384InstanceWithNullKeys() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Both provided Keys cannot be null.");
-        Algorithm.ECDSA384(null, null);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () ->
+            Algorithm.ECDSA384(null, null));
+        assertThat(exception.getMessage(), containsString("Both provided Keys cannot be null."));
     }
 
     @Test
     public void shouldThrowECDSA384InstanceWithNullKeyProvider() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Key Provider cannot be null.");
-        ECDSAKeyProvider provider = null;
-        Algorithm.ECDSA384(provider);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            ECDSAKeyProvider provider = null;
+            Algorithm.ECDSA384(provider);
+        });
+        assertThat(exception.getMessage(), containsString("The Key Provider cannot be null."));
     }
 
     @Test
     public void shouldThrowECDSA512InstanceWithNullKey() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Both provided Keys cannot be null.");
-        ECKey key = null;
-        Algorithm.ECDSA512(key);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            ECKey key = null;
+            Algorithm.ECDSA512(key);
+        });
+        assertThat(exception.getMessage(), containsString("Both provided Keys cannot be null."));
     }
 
     @Test
     public void shouldThrowECDSA512InstanceWithNullKeys() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Both provided Keys cannot be null.");
-        Algorithm.ECDSA512(null, null);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () ->
+            Algorithm.ECDSA512(null, null));
+        assertThat(exception.getMessage(), containsString("Both provided Keys cannot be null."));
     }
 
     @Test
     public void shouldThrowECDSA512InstanceWithNullKeyProvider() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Key Provider cannot be null.");
-        ECDSAKeyProvider provider = null;
-        Algorithm.ECDSA512(provider);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
+            ECDSAKeyProvider provider = null;
+            Algorithm.ECDSA512(provider);
+        });
+        assertThat(exception.getMessage(), containsString("The Key Provider cannot be null."));
     }
 
     @Test

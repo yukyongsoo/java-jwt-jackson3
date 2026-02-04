@@ -5,9 +5,7 @@ import com.auth0.jwt.interfaces.ECDSAKeyProvider;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.ECPrivateKey;
@@ -15,9 +13,11 @@ import java.security.interfaces.RSAPrivateKey;
 import java.time.Instant;
 import java.util.*;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -26,15 +26,12 @@ public class JWTCreatorTest {
     private static final String PRIVATE_KEY_FILE_RSA = "src/test/resources/rsa-private.pem";
     private static final String PRIVATE_KEY_FILE_EC_256 = "src/test/resources/ec256-key-private.pem";
 
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
     @Test
     public void shouldThrowWhenRequestingSignWithoutAlgorithm() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Algorithm cannot be null");
-        JWTCreator.init()
-                .sign(null);
+        Throwable exception = assertThrows(IllegalArgumentException.class, () ->
+            JWTCreator.init()
+                    .sign(null));
+        assertThat(exception.getMessage(), containsString("The Algorithm cannot be null"));
     }
 
     @Test
@@ -117,12 +114,12 @@ public class JWTCreatorTest {
     public void shouldFailWithIllegalArgumentExceptionForInvalidJsonForHeaderClaims() {
         String invalidJson = "{ invalidJson }";
 
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Invalid header JSON");
+        Throwable exception = assertThrows(IllegalArgumentException.class, () ->
 
-        JWTCreator.init()
-                .withHeader(invalidJson)
-                .sign(Algorithm.HMAC256("secret"));
+            JWTCreator.init()
+                    .withHeader(invalidJson)
+                    .sign(Algorithm.HMAC256("secret")));
+        assertThat(exception.getMessage(), containsString("Invalid header JSON"));
     }
 
     @Test
@@ -408,10 +405,10 @@ public class JWTCreatorTest {
 
     @Test
     public void shouldThrowOnNullCustomClaimName() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("The Custom Claim's name can't be null.");
-        JWTCreator.init()
-                .withClaim(null, "value");
+        Throwable exception = assertThrows(IllegalArgumentException.class, () ->
+            JWTCreator.init()
+                    .withClaim(null, "value"));
+        assertThat(exception.getMessage(), containsString("The Custom Claim's name can't be null."));
     }
 
     @Test
@@ -545,11 +542,11 @@ public class JWTCreatorTest {
         Map<String, Object> data = new HashMap<>();
         data.put("test1", new UserPojo("Michael", 255));
 
-        exception.expect(IllegalArgumentException.class);
+        assertThrows(IllegalArgumentException.class, () ->
 
-        JWTCreator.init()
-                .withClaim("pojo", data)
-                .sign(Algorithm.HMAC256("secret"));
+            JWTCreator.init()
+                    .withClaim("pojo", data)
+                    .sign(Algorithm.HMAC256("secret")));
     }
 
     @SuppressWarnings("unchecked")
@@ -679,11 +676,11 @@ public class JWTCreatorTest {
         Map<String, Object> data = new HashMap<>();
         data.put(null, "subValue");
 
-        exception.expect(IllegalArgumentException.class);
+        assertThrows(IllegalArgumentException.class, () ->
 
-        JWTCreator.init()
-                .withClaim("pojo", data)
-                .sign(Algorithm.HMAC256("secret"));
+            JWTCreator.init()
+                    .withClaim("pojo", data)
+                    .sign(Algorithm.HMAC256("secret")));
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -692,22 +689,22 @@ public class JWTCreatorTest {
         Map data = new HashMap<>();
         data.put(new Object(), "value");
 
-        exception.expect(IllegalArgumentException.class);
+        assertThrows(IllegalArgumentException.class, () ->
 
-        JWTCreator.init()
-                .withClaim("pojo", (Map<String, Object>) data)
-                .sign(Algorithm.HMAC256("secret"));
+            JWTCreator.init()
+                    .withClaim("pojo", (Map<String, Object>) data)
+                    .sign(Algorithm.HMAC256("secret")));
     }
 
     @Test
     public void shouldRefuseCustomListClaimForUnknownListElement() {
         List<Object> list = Collections.singletonList(new UserPojo("Michael", 255));
 
-        exception.expect(IllegalArgumentException.class);
+        assertThrows(IllegalArgumentException.class, () ->
 
-        JWTCreator.init()
-                .withClaim("list", list)
-                .sign(Algorithm.HMAC256("secret"));
+            JWTCreator.init()
+                    .withClaim("list", list)
+                    .sign(Algorithm.HMAC256("secret")));
     }
 
     @Test
@@ -717,11 +714,11 @@ public class JWTCreatorTest {
         Map<String, Object> data = new HashMap<>();
         data.put("someList", list);
 
-        exception.expect(IllegalArgumentException.class);
+        assertThrows(IllegalArgumentException.class, () ->
 
-        JWTCreator.init()
-                .withClaim("list", list)
-                .sign(Algorithm.HMAC256("secret"));
+            JWTCreator.init()
+                    .withClaim("list", list)
+                    .sign(Algorithm.HMAC256("secret")));
     }
 
     @Test
@@ -729,11 +726,11 @@ public class JWTCreatorTest {
         List<Object> list = new ArrayList<>();
         list.add(new Object[]{"test"});
 
-        exception.expect(IllegalArgumentException.class);
+        assertThrows(IllegalArgumentException.class, () ->
 
-        JWTCreator.init()
-                .withClaim("list", list)
-                .sign(Algorithm.HMAC256("secret"));
+            JWTCreator.init()
+                    .withClaim("list", list)
+                    .sign(Algorithm.HMAC256("secret")));
     }
 
     @Test
@@ -799,15 +796,16 @@ public class JWTCreatorTest {
 
     @Test
     public void withPayloadShouldNotAllowCustomType() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date, Instant, and Null");
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("entry", "value");
-        payload.put("pojo", new UserPojo("name", 42));
-        JWTCreator.init()
-                .withPayload(payload)
-                .sign(Algorithm.HMAC256("secret"));
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("entry", "value");
+            payload.put("pojo", new UserPojo("name", 42));
+            JWTCreator.init()
+                    .withPayload(payload)
+                    .sign(Algorithm.HMAC256("secret"));
+        });
+        assertThat(exception.getMessage(), containsString("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date, Instant, and Null"));
     }
 
     @Test
@@ -826,27 +824,29 @@ public class JWTCreatorTest {
 
     @Test
     public void withPayloadShouldNotAllowListWithCustomType() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date, Instant, and Null");
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("list", Arrays.asList("item1", new UserPojo("name", 42)));
-        JWTCreator.init()
-                .withPayload(payload)
-                .sign(Algorithm.HMAC256("secret"));
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("list", Arrays.asList("item1", new UserPojo("name", 42)));
+            JWTCreator.init()
+                    .withPayload(payload)
+                    .sign(Algorithm.HMAC256("secret"));
+        });
+        assertThat(exception.getMessage(), containsString("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date, Instant, and Null"));
     }
 
     @Test
     public void withPayloadShouldNotAllowMapWithCustomType() {
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date, Instant, and Null");
+        Throwable exception = assertThrows(IllegalArgumentException.class, () -> {
 
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("entry", "value");
-        payload.put("map", Collections.singletonMap("pojo", new UserPojo("name", 42)));
-        JWTCreator.init()
-                .withPayload(payload)
-                .sign(Algorithm.HMAC256("secret"));
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("entry", "value");
+            payload.put("map", Collections.singletonMap("pojo", new UserPojo("name", 42)));
+            JWTCreator.init()
+                    .withPayload(payload)
+                    .sign(Algorithm.HMAC256("secret"));
+        });
+        assertThat(exception.getMessage(), containsString("Claim values must only be of types Map, List, Boolean, Integer, Long, Double, String, Date, Instant, and Null"));
     }
 
     @Test
@@ -985,12 +985,12 @@ public class JWTCreatorTest {
     public void shouldFailWithIllegalArgumentExceptionForInvalidJsonForPayloadClaims() {
         String invalidJson = "{ invalidJson }";
 
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("Invalid payload JSON");
+        Throwable exception = assertThrows(IllegalArgumentException.class, () ->
 
-        JWTCreator.init()
-                .withPayload(invalidJson)
-                .sign(Algorithm.HMAC256("secret"));
+            JWTCreator.init()
+                    .withPayload(invalidJson)
+                    .sign(Algorithm.HMAC256("secret")));
+        assertThat(exception.getMessage(), containsString("Invalid payload JSON"));
     }
 
     @Test

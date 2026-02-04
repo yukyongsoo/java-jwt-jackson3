@@ -5,9 +5,7 @@ import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.core.IsIterableContaining;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -17,12 +15,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class JWTDecoderTest {
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void getSubject() {
@@ -34,60 +32,62 @@ public class JWTDecoderTest {
     // Exceptions
     @Test
     public void shouldThrowIfTheContentIsNotProperlyEncoded() {
-        exception.expect(JWTDecodeException.class);
-        exception.expectMessage(startsWith("The string '"));
-        exception.expectMessage(endsWith("' doesn't have a valid JSON format."));
-        JWT.decode("eyJ0eXAiOiJKV1QiLCJhbGciO-corrupted.eyJ0ZXN0IjoxMjN9.sLtFC2rLAzN0-UJ13OLQX6ezNptAQzespaOGwCnpqk");
+        Throwable exception = assertThrows(JWTDecodeException.class, () ->
+            JWT.decode("eyJ0eXAiOiJKV1QiLCJhbGciO-corrupted.eyJ0ZXN0IjoxMjN9.sLtFC2rLAzN0-UJ13OLQX6ezNptAQzespaOGwCnpqk"));
+        assertThat(exception.getMessage(), startsWith("The string '"));
+        assertThat(exception.getMessage(), endsWith("' doesn't have a valid JSON format."));
     }
 
     @Test
     public void shouldThrowIfLessThan3Parts() {
-        exception.expect(JWTDecodeException.class);
-        exception.expectMessage("The token was expected to have 3 parts, but got 2.");
-        JWT.decode("two.parts");
+        Throwable exception = assertThrows(JWTDecodeException.class, () ->
+            JWT.decode("two.parts"));
+        assertThat(exception.getMessage(), containsString("The token was expected to have 3 parts, but got 2."));
     }
 
     @Test
     public void shouldThrowIfMoreThan3Parts() {
-        exception.expect(JWTDecodeException.class);
-        exception.expectMessage("The token was expected to have 3 parts, but got > 3.");
-        JWT.decode("this.has.four.parts");
+        Throwable exception = assertThrows(JWTDecodeException.class, () ->
+            JWT.decode("this.has.four.parts"));
+        assertThat(exception.getMessage(), containsString("The token was expected to have 3 parts, but got > 3."));
     }
 
     @Test
     public void shouldThrowIfPayloadHasInvalidJSONFormat() {
         String validJson = "{}";
         String invalidJson = "}{";
-        exception.expect(JWTDecodeException.class);
-        exception.expectMessage(String.format("The string '%s' doesn't have a valid JSON format.", invalidJson));
-        customJWT(validJson, invalidJson, "signature");
+        Throwable exception = assertThrows(JWTDecodeException.class, () ->
+            customJWT(validJson, invalidJson, "signature"));
+        assertThat(exception.getMessage(), containsString(String.format("The string '%s' doesn't have a valid JSON format.", invalidJson)));
     }
 
     @Test
     public void shouldThrowIfHeaderHasInvalidJSONFormat() {
         String validJson = "{}";
         String invalidJson = "}{";
-        exception.expect(JWTDecodeException.class);
-        exception.expectMessage(String.format("The string '%s' doesn't have a valid JSON format.", invalidJson));
-        customJWT(invalidJson, validJson, "signature");
+        Throwable exception = assertThrows(JWTDecodeException.class, () ->
+            customJWT(invalidJson, validJson, "signature"));
+        assertThat(exception.getMessage(), containsString(String.format("The string '%s' doesn't have a valid JSON format.", invalidJson)));
     }
 
     @Test
     public void shouldThrowWhenHeaderNotValidBase64() {
-        exception.expect(JWTDecodeException.class);
-        exception.expectCause(isA(IllegalArgumentException.class));
+        Throwable exception = assertThrows(JWTDecodeException.class, () -> {
 
-        String jwt = "eyJhbGciOiJub25l+IiwiY3R5IjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.Ox-WRXRaGAuWt2KfPvWiGcCrPqZtbp_4OnQzZXaTfss";
-        JWT.decode(jwt);
+            String jwt = "eyJhbGciOiJub25l+IiwiY3R5IjoiSldUIn0.eyJpc3MiOiJhdXRoMCJ9.Ox-WRXRaGAuWt2KfPvWiGcCrPqZtbp_4OnQzZXaTfss";
+            JWT.decode(jwt);
+        });
+        assertThat(exception.getCause(), isA(IllegalArgumentException.class));
     }
 
     @Test
     public void shouldThrowWhenPayloadNotValidBase64() {
-        exception.expect(JWTDecodeException.class);
-        exception.expectCause(isA(IllegalArgumentException.class));
+        Throwable exception = assertThrows(JWTDecodeException.class, () -> {
 
-        String jwt = "eyJhbGciOiJub25lIiwiY3R5IjoiSldUIn0.eyJpc3MiOiJhdXRo+MCJ9.Ox-WRXRaGAuWt2KfPvWiGcCrPqZtbp_4OnQzZXaTfss";
-        JWT.decode(jwt);
+            String jwt = "eyJhbGciOiJub25lIiwiY3R5IjoiSldUIn0.eyJpc3MiOiJhdXRo+MCJ9.Ox-WRXRaGAuWt2KfPvWiGcCrPqZtbp_4OnQzZXaTfss";
+            JWT.decode(jwt);
+        });
+        assertThat(exception.getCause(), isA(IllegalArgumentException.class));
     }
 
     // Parts

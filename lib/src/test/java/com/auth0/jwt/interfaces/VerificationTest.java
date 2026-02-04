@@ -1,7 +1,7 @@
 package com.auth0.jwt.interfaces;
 
 import com.auth0.jwt.JWTVerifier;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.Date;
@@ -12,7 +12,6 @@ import java.util.function.BiPredicate;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThrows;
 
 /**
  * Tests for any default method implementations in the {@link Verification} interface.

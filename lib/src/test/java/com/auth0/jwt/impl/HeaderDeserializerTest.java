@@ -8,48 +8,46 @@ import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.NullNode;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.auth0.jwt.impl.JWTParser.getDefaultObjectMapper;
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class HeaderDeserializerTest {
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
     private HeaderDeserializer deserializer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         deserializer = new HeaderDeserializer();
     }
 
     @Test
-    public void shouldThrowOnNullTree() throws Exception {
-        exception.expect(JWTDecodeException.class);
-        exception.expectMessage("Parsing the Header's JSON resulted on a Null map");
+    public void shouldThrowOnNullTree() {
+        Throwable exception = assertThrows(JWTDecodeException.class, () -> {
 
-        HeaderDeserializer deserializer = new HeaderDeserializer();
-        JsonParser parser = mock(JsonParser.class);
-        DeserializationContext context = mock(DeserializationContext.class);
+            HeaderDeserializer deserializer = new HeaderDeserializer();
+            JsonParser parser = mock(JsonParser.class);
+            DeserializationContext context = mock(DeserializationContext.class);
 
-        when(context.readValue(eq(parser), any(TypeReference.class))).thenReturn(null);
+            when(context.readValue(eq(parser), any(TypeReference.class))).thenReturn(null);
 
-        deserializer.deserialize(parser, context);
+            deserializer.deserialize(parser, context);
+        });
+        assertThat(exception.getMessage(), containsString("Parsing the Header's JSON resulted on a Null map"));
     }
 
 

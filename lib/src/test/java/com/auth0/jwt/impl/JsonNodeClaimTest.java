@@ -13,10 +13,8 @@ import tools.jackson.databind.node.MissingNode;
 import tools.jackson.databind.node.NullNode;
 import tools.jackson.databind.node.ObjectNode;
 import org.hamcrest.collection.IsMapContaining;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import tools.jackson.databind.ser.SerializationContextExt;
 
@@ -39,18 +37,17 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 public class JsonNodeClaimTest {
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
     private DeserializationContextExt context;
     private SerializationContextExt writeContext;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         var objectMapper = getDefaultObjectMapper();
         this.context = objectMapper._deserializationContext();
@@ -205,8 +202,8 @@ public class JsonNodeClaimTest {
         JsonNode value = writeContext.valueToTree(new String[]{"keys", "values"});
         Claim claim = claimFromNode(value);
 
-        exception.expect(JWTDecodeException.class);
-        claim.asArray(UserPojo.class);
+        assertThrows(JWTDecodeException.class, () ->
+            claim.asArray(UserPojo.class));
     }
 
     @Test
@@ -248,8 +245,8 @@ public class JsonNodeClaimTest {
         JsonNode value = writeContext.valueToTree(new String[]{"keys", "values"});
         Claim claim = claimFromNode(value);
 
-        exception.expect(JWTDecodeException.class);
-        claim.asList(UserPojo.class);
+        assertThrows(JWTDecodeException.class, () ->
+            claim.asList(UserPojo.class));
     }
 
     @Test
@@ -291,20 +288,14 @@ public class JsonNodeClaimTest {
 
     @Test
     public void shouldThrowIfAnExtraordinaryExceptionHappensWhenParsingAsGenericMap() {
-        JsonNode value = mock(ObjectNode.class);
-        when(value.getNodeType()).thenReturn(JsonNodeType.OBJECT);
+        ObjectNode value = mock(ObjectNode.class);
+        when(value.isObject()).thenReturn(true);
 
         var mockedContext = mock(DeserializationContextExt.class);
 
         JsonNodeClaim claim = (JsonNodeClaim) JsonNodeClaim.claimFromNode(value, mockedContext);
-        JsonNodeClaim spiedClaim = spy(claim);
-        
-        JsonParser mockedParser = mock(JsonParser.class);
-        when(mockedContext.treeAsTokens(value)).thenReturn(mockedParser);
-        when(mockedParser.readValueAs(ArgumentMatchers.any(TypeReference.class))).thenThrow(JacksonException.class);
 
-        exception.expect(JWTDecodeException.class);
-        spiedClaim.asMap();
+        assertThrows(JWTDecodeException.class, claim::asMap);
     }
 
     @Test
@@ -322,8 +313,8 @@ public class JsonNodeClaimTest {
         JsonNode value = writeContext.valueToTree(new UserPojo("john", 123));
         Claim claim = claimFromNode(value);
 
-        exception.expect(JWTDecodeException.class);
-        claim.as(String.class);
+        assertThrows(JWTDecodeException.class, () ->
+            claim.as(String.class));
     }
 
     @Test

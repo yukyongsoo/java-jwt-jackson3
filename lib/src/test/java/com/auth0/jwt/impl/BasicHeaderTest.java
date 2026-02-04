@@ -1,14 +1,12 @@
 package com.auth0.jwt.impl;
 
-import org.junit.Before;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.NullNode;
 import org.hamcrest.collection.IsMapContaining;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,15 +14,13 @@ import java.util.Map;
 import static com.auth0.jwt.impl.JWTParser.getDefaultObjectMapper;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class BasicHeaderTest {
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
     
     private DeserializationContext context;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         var mapper = getDefaultObjectMapper();
         context = mapper._deserializationContext();
@@ -33,16 +29,18 @@ public class BasicHeaderTest {
     @SuppressWarnings("Convert2Diamond")
     @Test
     public void shouldHaveUnmodifiableTreeWhenInstantiatedWithNonNullTree() {
-        exception.expect(UnsupportedOperationException.class);
-        BasicHeader header = new BasicHeader(null, null, null, null, new HashMap<String, JsonNode>(), context);
-        header.getTree().put("something", null);
+        assertThrows(UnsupportedOperationException.class, () -> {
+            BasicHeader header = new BasicHeader(null, null, null, null, new HashMap<String, JsonNode>(), context);
+            header.getTree().put("something", null);
+        });
     }
 
     @Test
     public void shouldHaveUnmodifiableTreeWhenInstantiatedWithNullTree() {
-        exception.expect(UnsupportedOperationException.class);
-        BasicHeader header = new BasicHeader(null, null, null, null, null, context);
-        header.getTree().put("something", null);
+        assertThrows(UnsupportedOperationException.class, () -> {
+            BasicHeader header = new BasicHeader(null, null, null, null, null, context);
+            header.getTree().put("something", null);
+        });
     }
 
     @Test

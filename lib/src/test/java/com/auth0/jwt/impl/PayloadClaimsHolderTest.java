@@ -1,7 +1,7 @@
 package com.auth0.jwt.impl;
 
 import org.hamcrest.collection.IsMapContaining;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;

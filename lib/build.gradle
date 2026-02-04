@@ -119,10 +119,12 @@ dependencies {
     implementation 'tools.jackson.core:jackson-databind:3.0.4'
 
     testImplementation 'org.bouncycastle:bcprov-jdk15on:1.70'
-    testImplementation 'junit:junit:4.13.2'
     testImplementation 'net.jodah:concurrentunit:0.4.6'
     testImplementation 'org.hamcrest:hamcrest:2.2'
-    testImplementation 'org.mockito:mockito-core:4.4.0'
+    testImplementation 'org.mockito:mockito-core:5.21.0'
+    testImplementation(platform('org.junit:junit-bom:6.0.2'))
+    testImplementation('org.junit.jupiter:junit-jupiter')
+    testRuntimeOnly('org.junit.platform:junit-platform-launcher')
 
     jmhImplementation sourceSets.main.output
     jmhImplementation 'org.openjdk.jmh:jmh-core:1.37'
@@ -145,6 +147,7 @@ test {
         events "skipped", "failed", "standardError"
         exceptionFormat "short"
     }
+    useJUnitPlatform()
 }
 
 compileTestJava {

@@ -10,16 +10,16 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ArrayNode;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.core.IsIterableContaining;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.StringReader;
 import java.time.Instant;
 import java.util.*;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -27,44 +27,43 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PayloadDeserializerTest {
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
     private PayloadDeserializer deserializer;
 
     private ObjectMapper objectMapper;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         objectMapper = new ObjectMapper();
         deserializer = new PayloadDeserializer();
     }
 
     @Test
-    public void shouldThrowOnNullTree() throws Exception {
-        exception.expect(JWTDecodeException.class);
-        exception.expectMessage("Parsing the Payload's JSON resulted on a Null map");
+    public void shouldThrowOnNullTree() {
+        Throwable exception = assertThrows(JWTDecodeException.class, () -> {
 
-        JsonParser parser = mock(JsonParser.class);
-        DeserializationContext context = mock(DeserializationContext.class);
+            JsonParser parser = mock(JsonParser.class);
+            DeserializationContext context = mock(DeserializationContext.class);
 
-        when(context.readValue(eq(parser), any(TypeReference.class))).thenReturn(null);
+            when(context.readValue(eq(parser), any(TypeReference.class))).thenReturn(null);
 
-        deserializer.deserialize(parser, context);
+            deserializer.deserialize(parser, context);
+        });
+        assertThat(exception.getMessage(), containsString("Parsing the Payload's JSON resulted on a Null map"));
     }
 
     @Test
-    public void shouldThrowWhenParsingArrayWithObjectValue() throws Exception {
-        exception.expect(JWTDecodeException.class);
-        exception.expectMessage("Couldn't map the Claim's array contents to String");
+    public void shouldThrowWhenParsingArrayWithObjectValue() {
+        Throwable exception = assertThrows(JWTDecodeException.class, () -> {
 
-        JsonNode jsonNode = objectMapper.readTree("{\"some\" : \"random\", \"properties\" : \"inside\"}");
-        Map<String, JsonNode> tree = new HashMap<>();
-        ArrayNode arrNode = objectMapper.createArrayNode();
-        arrNode.add(jsonNode);
-        tree.put("key", arrNode);
+            JsonNode jsonNode = objectMapper.readTree("{\"some\" : \"random\", \"properties\" : \"inside\"}");
+            Map<String, JsonNode> tree = new HashMap<>();
+            ArrayNode arrNode = objectMapper.createArrayNode();
+            arrNode.add(jsonNode);
+            tree.put("key", arrNode);
 
-        deserializer.getStringOrArray(objectMapper._deserializationContext(), tree, "key");
+            deserializer.getStringOrArray(objectMapper._deserializationContext(), tree, "key");
+        });
+        assertThat(exception.getMessage(), containsString("Couldn't map the Claim's array contents to String"));
     }
 
     @Test
@@ -203,15 +202,16 @@ public class PayloadDeserializerTest {
 
     @Test
     public void shouldThrowWhenParsingNonNumericNode() {
-        exception.expect(JWTDecodeException.class);
-        exception.expectMessage("The claim 'key' contained a non-numeric date value.");
+        Throwable exception = assertThrows(JWTDecodeException.class, () -> {
 
-        Map<String, JsonNode> tree = new HashMap<>();
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.getNodeFactory().textNode("123456789");
-        tree.put("key", node);
+            Map<String, JsonNode> tree = new HashMap<>();
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode node = mapper.getNodeFactory().textNode("123456789");
+            tree.put("key", node);
 
-        deserializer.getInstantFromSeconds(tree, "key");
+            deserializer.getInstantFromSeconds(tree, "key");
+        });
+        assertThat(exception.getMessage(), containsString("The claim 'key' contained a non-numeric date value."));
     }
 
     @Test

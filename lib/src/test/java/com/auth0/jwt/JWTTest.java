@@ -4,9 +4,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.core.IsIterableContaining;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.security.interfaces.ECKey;
@@ -32,9 +30,6 @@ public class JWTTest {
     private static final String PRIVATE_KEY_FILE_EC_256 = "src/test/resources/ec256-key-private.pem";
     private static final String PRIVATE_KEY_FILE_EC_384 = "src/test/resources/ec384-key-private.pem";
     private static final String PRIVATE_KEY_FILE_EC_512 = "src/test/resources/ec512-key-private.pem";
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     // Decode
 

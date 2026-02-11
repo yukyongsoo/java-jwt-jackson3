@@ -53,7 +53,7 @@ class JsonNodeClaim implements Claim {
 
     @Override
     public String asString() {
-        return isMissing() || isNull() || !data.isTextual() ? null : data.asText();
+        return isMissing() || isNull() || !data.isString() ? null : data.asString();
     }
 
     @Override

@@ -10,7 +10,6 @@ import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.deser.std.StdDeserializer;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 
@@ -49,11 +48,11 @@ class PayloadDeserializer extends StdDeserializer<Payload> {
     List<String> getStringOrArray(DeserializationContext context, Map<String, JsonNode> tree, String claimName)
             throws JWTDecodeException {
         JsonNode node = tree.get(claimName);
-        if (node == null || node.isNull() || !(node.isArray() || node.isTextual())) {
+        if (node == null || node.isNull() || !(node.isArray() || node.isString())) {
             return null;
         }
-        if (node.isTextual()) {
-            return Collections.singletonList(node.asText());
+        if (node.isString()) {
+            return Collections.singletonList(node.asString());
         }
 
         List<String> list = new ArrayList<>(node.size());

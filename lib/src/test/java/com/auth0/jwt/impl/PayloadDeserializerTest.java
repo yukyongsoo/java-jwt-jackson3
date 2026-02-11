@@ -109,8 +109,8 @@ public class PayloadDeserializerTest {
     public void shouldGetStringArrayWhenParsingArrayNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         ArrayNode arrNode = objectMapper.createArrayNode();
-        arrNode.add(objectMapper.getNodeFactory().textNode("one"));
-        arrNode.add(objectMapper.getNodeFactory().textNode("two"));
+        arrNode.add(objectMapper.getNodeFactory().stringNode("one"));
+        arrNode.add(objectMapper.getNodeFactory().stringNode("two"));
         tree.put("key", arrNode);
 
         List<String> values = deserializer.getStringOrArray(objectMapper._deserializationContext(), tree, "key");
@@ -123,7 +123,7 @@ public class PayloadDeserializerTest {
     public void shouldGetStringArrayWhenParsingTextNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode textNode = mapper.getNodeFactory().textNode("something");
+        JsonNode textNode = mapper.getNodeFactory().stringNode("something");
         tree.put("key", textNode);
 
         DeserializationContext context = mock(DeserializationContext.class);
@@ -137,7 +137,7 @@ public class PayloadDeserializerTest {
     public void shouldGetEmptyStringInArrayWhenParsingEmptyTextNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode textNode = mapper.getNodeFactory().textNode("");
+        JsonNode textNode = mapper.getNodeFactory().stringNode("");
         tree.put("key", textNode);
 
         DeserializationContext context = mock(DeserializationContext.class);
@@ -206,7 +206,7 @@ public class PayloadDeserializerTest {
 
             Map<String, JsonNode> tree = new HashMap<>();
             ObjectMapper mapper = new ObjectMapper();
-            JsonNode node = mapper.getNodeFactory().textNode("123456789");
+            JsonNode node = mapper.getNodeFactory().stringNode("123456789");
             tree.put("key", node);
 
             deserializer.getInstantFromSeconds(tree, "key");
@@ -266,7 +266,7 @@ public class PayloadDeserializerTest {
     public void shouldGetStringWhenParsingTextNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.getNodeFactory().textNode("something here");
+        JsonNode node = mapper.getNodeFactory().stringNode("something here");
         tree.put("key", node);
 
         String text = deserializer.getString(tree, "key");

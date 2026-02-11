@@ -33,7 +33,7 @@ public class PayloadImplTest {
         context = mapper._deserializationContext();
                 
         Map<String, JsonNode> tree = new HashMap<>();
-        tree.put("extraClaim", context.getNodeFactory().textNode("extraValue"));
+        tree.put("extraClaim", context.getNodeFactory().stringNode("extraValue"));
         payload = new PayloadImpl("issuer", "subject", Collections.singletonList("audience"), expiresAt, notBefore, issuedAt, "jwtId", tree, context);
     }
 
@@ -171,8 +171,8 @@ public class PayloadImplTest {
     @Test
     public void shouldGetClaims() {
         Map<String, JsonNode> tree = new HashMap<>();
-        tree.put("extraClaim", context.getNodeFactory().textNode("extraValue"));
-        tree.put("sub", context.getNodeFactory().textNode("auth0"));
+        tree.put("extraClaim", context.getNodeFactory().stringNode("extraValue"));
+        tree.put("sub", context.getNodeFactory().stringNode("auth0"));
         PayloadImpl payload = new PayloadImpl(null, null, null, null, null, null, null, tree, context);
         assertThat(payload, is(notNullValue()));
         Map<String, Claim> claims = payload.getClaims();

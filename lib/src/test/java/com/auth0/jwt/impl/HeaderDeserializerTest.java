@@ -102,7 +102,7 @@ public class HeaderDeserializerTest {
     public void shouldGetStringWhenParsingTextNode() {
         Map<String, JsonNode> tree = new HashMap<>();
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode node = mapper.getNodeFactory().textNode("something here");
+        JsonNode node = mapper.getNodeFactory().stringNode("something here");
         tree.put("key", node);
 
         String text = deserializer.getString(tree, "key");

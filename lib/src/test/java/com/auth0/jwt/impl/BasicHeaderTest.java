@@ -125,7 +125,7 @@ public class BasicHeaderTest {
     @Test
     public void shouldGetExtraClaim() {
         Map<String, JsonNode> tree = new HashMap<>();
-        tree.put("extraClaim", context.getNodeFactory().textNode("extraValue"));
+        tree.put("extraClaim", context.getNodeFactory().stringNode("extraValue"));
         BasicHeader header = new BasicHeader(null, null, null, null, tree, context);
 
         assertThat(header, is(notNullValue()));

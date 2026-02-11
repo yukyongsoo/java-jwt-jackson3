@@ -7,10 +7,8 @@ import tools.jackson.core.JsonParser;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.deser.std.StdDeserializer;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -28,7 +26,7 @@ class HeaderDeserializer extends StdDeserializer<Header> {
 
     @Override
     public Header deserialize(JsonParser p, DeserializationContext ctxt) {
-        Map<String, JsonNode> tree = ctxt.readValue(p, new TypeReference<Map<String, JsonNode>>() {
+        Map<String, JsonNode> tree = ctxt.readValue(p, new TypeReference<>() {
         });
         if (tree == null) {
             throw new JWTDecodeException("Parsing the Header's JSON resulted on a Null map");

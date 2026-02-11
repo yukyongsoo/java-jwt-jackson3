@@ -5,15 +5,12 @@ import com.auth0.jwt.interfaces.Header;
 import com.auth0.jwt.interfaces.JWTPartsParser;
 import com.auth0.jwt.interfaces.Payload;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import tools.jackson.core.StreamReadCapability;
-import tools.jackson.core.json.JsonReadFeature;
+import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.ObjectReader;
 import tools.jackson.databind.SerializationFeature;
 import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.databind.module.SimpleModule;
-
-import java.io.IOException;
 
 /**
  * This class helps in decoding the Header and Payload of the JWT using
@@ -26,15 +23,18 @@ public class JWTParser implements JWTPartsParser {
 
     private final ObjectReader payloadReader;
     private final ObjectReader headerReader;
+    private static ObjectMapper objectMapper = null;
 
     public JWTParser() {
         this.payloadReader = DEFAULT_PAYLOAD_READER;
         this.headerReader = DEFAULT_HEADER_READER;
+        objectMapper = DEFAULT_OBJECT_MAPPER;
     }
 
     JWTParser(ObjectMapper mapper) {
         this.payloadReader = mapper.readerFor(Payload.class);
         this.headerReader = mapper.readerFor(Header.class);
+        objectMapper = mapper;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class JWTParser implements JWTPartsParser {
 
         try {
             return payloadReader.readValue(json);
-        } catch (Exception e) {
+        } catch (JacksonException e) {
             throw decodeException(json);
         }
     }
@@ -71,7 +71,11 @@ public class JWTParser implements JWTPartsParser {
     }
 
     static ObjectMapper getDefaultObjectMapper() {
-        return DEFAULT_OBJECT_MAPPER;
+        if(objectMapper != null) {
+            return objectMapper;
+        } else {
+            return DEFAULT_OBJECT_MAPPER;
+        }
     }
 
     private static ObjectMapper createDefaultObjectMapper() {

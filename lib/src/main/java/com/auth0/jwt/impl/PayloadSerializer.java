@@ -1,6 +1,7 @@
 package com.auth0.jwt.impl;
 
 import com.auth0.jwt.RegisteredClaims;
+import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonGenerator;
 import tools.jackson.databind.SerializationContext;
 
@@ -25,7 +26,7 @@ public class PayloadSerializer extends ClaimsSerializer<PayloadClaimsHolder> {
     @Override
     protected void writeClaim(Map.Entry<String, Object> entry,
                               JsonGenerator gen,
-                              SerializationContext provider) throws IOException {
+                              SerializationContext provider) throws JacksonException {
         if (RegisteredClaims.AUDIENCE.equals(entry.getKey())) {
             writeAudience(gen, entry);
         } else {
@@ -37,7 +38,7 @@ public class PayloadSerializer extends ClaimsSerializer<PayloadClaimsHolder> {
      * Audience may be a list of strings or a single string. This is needed to properly handle the aud claim when
      * added with the {@linkplain com.auth0.jwt.JWTCreator.Builder#withPayload(Map)} method.
      */
-    private void writeAudience(JsonGenerator gen, Map.Entry<String, Object> e) throws IOException {
+    private void writeAudience(JsonGenerator gen, Map.Entry<String, Object> e) throws JacksonException {
         if (e.getValue() instanceof String) {
             gen.writeName(e.getKey());
             gen.writeString((String) e.getValue());
